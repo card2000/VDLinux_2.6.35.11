@@ -1,0 +1,4 @@
+cmd9500: cmd9500.c ioctl_9500.h
+	$(CROSS_COMPILE)gcc -o cmd9500 cmd9500.c
+clean:
+	-rm -f *.o .*.cmd cmd9500

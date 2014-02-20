@@ -1,0 +1,11 @@
+#
+# USB Fault driver configuration
+#
+
+comment "USB Over-current Fault driver"
+	depends on USB
+
+config USB_FAULT
+	tristate "USB Over-current Fault"
+	depends on USB
+	default M

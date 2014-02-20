@@ -1,0 +1,96 @@
+# Config Novatek Platform
+
+menu "Novatek config"
+
+choice
+	prompt "Novatek Chip Selection"
+	default NVT_NT72558
+
+config NVT_NT72688
+	bool "Novatek NT72688 board"
+	select DMA_NONCOHERENT
+	select ARCH_SPARSEMEM_ENABLE
+	select IRQ_CPU
+	select IRQ_GIC
+	select CEVT_R4K
+#	select MIPS_BOARDS_GEN
+	select MIPS_CPU_SCACHE
+	select SYS_HAS_CPU_MIPS32_R2
+	select SYS_HAS_EARLY_PRINTK
+	select SYS_SUPPORTS_HIGHMEM
+	select SYS_SUPPORTS_32BIT_KERNEL
+	select SYS_SUPPORTS_LITTLE_ENDIAN
+	select SYS_SUPPORTS_MULTITHREADING
+	help
+	  This enables support for the NovaTek nt72688 evaluation
+	  board.
+
+config NVT_NT72558
+	bool "Novatek NT72558 board"
+	select DMA_NONCOHERENT
+	select ARCH_SPARSEMEM_ENABLE
+	select IRQ_CPU
+	select CEVT_R4K
+	select CSRC_R4K
+#	select MIPS_BOARDS_GEN
+	select MIPS_CPU_SCACHE
+	select SYS_HAS_CPU_MIPS32_R2
+	select SYS_HAS_EARLY_PRINTK
+	select SYS_SUPPORTS_HIGHMEM
+	select SYS_SUPPORTS_32BIT_KERNEL
+	select SYS_SUPPORTS_LITTLE_ENDIAN
+	select SYS_SUPPORTS_MULTITHREADING
+	help
+	  This enables support for the NovaTek nt72558 evaluation
+	  board.
+endchoice
+
+config PULLOUT_INITRAMFS
+	bool "Pull-out Initramfs source file from kernel image"
+	default n
+	help
+	  Enable this to pull-out initramfs_data.cpio.gz from vmlinux.
+
+config INITRAMFS_IMG_HDR_ADDR
+	hex "Location info of __initramfs_start and __initramfs_end"
+	depends on PULLOUT_INITRAMFS
+	default 0x88000000
+	help
+	  The first word contains __initramfs_start. And the second word contains __initramfs_end.
+
+config SET_CLOCK_MANUALLY
+	bool "Set clock manually"
+	default n
+
+config CPU_CLOCK
+	int "CPU clock setting (kHz)"
+	depends on SET_CLOCK_MANUALLY
+	default 25000
+
+config AHB_CLOCK
+	int "AHB clock setting (kHz)"
+	depends on SET_CLOCK_MANUALLY
+	default 12000
+
+config NVT_MEMPROTECT
+	bool "Set Novatek memory protection"
+	default y
+	help
+		Enable novatek hardware memory protection for kernel text and rodata section.
+		If someone want to write these sections, it will trigger interrupt.
+
+config EXTERNEL_SYNC
+	bool "Enable External SYNC"
+	default n
+	help 
+		System has enabled External SYNC. SYNC instruction would 
+		cause a synchonizing transaction on external bus. 
+
+config 64BIT_FPR
+	bool "Select 64 bits floating point register"
+	depends on NVT_NT72688
+	default n
+
+source "drivers/nvt/usb/Kconfig"
+endmenu
+

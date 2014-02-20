@@ -1,0 +1,105 @@
+######################################################################
+#
+# 	Kconfig for machine about Costom Consumer Electronics 
+# 	
+# 	created by tukho.kim@samsung.com
+#
+######################################################################
+#
+# May,31,2010:	created by tukho.kim
+# 
+
+if ARCH_CCEP
+
+choice 
+	prompt "Consumer Electronics"
+	default SAMSUNG_VD_DTV_PLATFORM
+
+config  SAMSUNG_VD_DTV_PLATFORM
+	bool "Samsung VD DTV Platform"
+	help
+	  This enables support for Samsung co. VD SoC R&D Group DTV Platform
+
+config  SAMSUNG_VD_BD_PLATFORM
+	bool "Samsung VD Blue-ray Platform"
+	help
+	  This enables support for Samsung co. VD SoC R&D Group Blue-ray Platform
+endchoice # Consumer Electronics
+
+
+if SAMSUNG_VD_DTV_PLATFORM
+source "arch/arm/mach-ccep/Kconfig.dtv" 
+endif # SAMSUNG_VD_DTV_PLATFORM
+
+if SAMSUNG_VD_BD_PLATFORM
+source "arch/arm/mach-ccep/Kconfig.bd" 
+endif # SAMSUNG_VD_BD_PLATFORM
+
+#
+# Discontigmem support 
+#
+config MACH_MEMORY_TYPE_SUPPORT
+	bool 
+
+if MACH_MEMORY_TYPE_SUPPORT
+
+choice
+	prompt "Choose System Memory Type"
+	default SDP_SPARSEMEM_SUPPORT
+
+config SDP_SPARSEMEM_SUPPORT
+	bool "Sparse memory support"
+	select ARCH_SPARSEMEM_ENABLE
+	help
+	  This enables support sparse memory.
+
+config SDP_SINGLE_DDR_A
+	bool "only DDR A channel system memory"
+	help
+	  This enables support only to use A channel for system memory
+
+config SDP_SINGLE_DDR_B
+	bool "only DDR B channel system memory"
+	help
+	  This enables support only to use B channel for system memory
+
+config SDP_SINGLE_DDR_C
+	bool "only DDR C channel system memory"
+	help
+	  This enables support only to use C channel for system memory
+
+endchoice # "Choose System Memory Type"
+
+menu "Select ARM Errata Patch"
+
+config SDP_ARM_A8_ERRATA_586324
+	bool "ARM A8 ERRATA 586324 - cache corruption"
+	default y if ARCH_SDP1002 || ARCH_SDP1103 || ARCH_SDP1103FPGA
+	help
+	  This fix ARM_ERRATA_586324. Cache maintenance operation done by MVA can result in a corruption of memory.
+
+config SDP_ARM_A9_ERRATA_754322
+	bool "ARM_A9_ERRATA_754322 - MMU faild in ASID switch"
+	default y if ARCH_SDP1001 || ARCH_SDP1004 || ARCH_SDP1105 || ARCH_SDP1106 || ARCH_SDP1105FPGA || ARCH_SDP1106FPGA
+	help
+	  This fix ARM_ERRATA_754322. Possible faulty MMU translations following an ASID switch.
+
+config SDP_ARM_A9_ERRATA_764369
+	bool "ARM_A9_ERRATA_764369 - Cache Op failed on Inner Sharable Memory"
+	default y if ARCH_SDP1105 || ARCH_SDP1106 || ARCH_SDP1105FPGA || ARCH_SDP1106FPGA
+	help
+	  This fix ARM_ERRATA_764369. Data or unified cache line maintenance operation by MVA may not succeed on an Inner Shareable memory region.
+
+config SDP_ARM_PL310_ERRATA_752271
+	bool "ARM_PL310_ERRATA_752271 - Double linefill feature can cause data corruption"
+	default y if ARCH_SDP1105 || ARCH_SDP1106 || ARCH_SDP1105FPGA || ARCH_SDP1106FPGA || ARCH_SDP1004 || ARCH1001
+	help
+	  This fix PL310_ERRATA_752271. Double linefill feature can cause data corruption.
+
+endmenu
+
+endif # MACH_MEMORY_TYPE_SUPPORT
+
+endif # ARCH_CCEP	
+
+

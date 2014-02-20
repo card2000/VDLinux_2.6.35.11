@@ -1,0 +1,36 @@
+#menu Samsung
+
+## SELP Menu Start: config file  for SELP Features #############################
+## MS.PARK 08.07
+menu "CI+ Option"
+
+config EXECUTE_AUTHULD
+       default n
+       bool "Execute authuld program on background"
+       help
+         decide whether executing authuld
+
+config SHUTDOWN
+        bool "Send shutdown signal to micom"
+        default n
+        depends on EXECUTE_AUTHULD=y
+        help
+          decide whether send "shutdown" to micom or not
+
+config AUTHULD_PATH
+        string "Path to authuld file"
+        default "/bin/authuld"
+        depends on EXECUTE_AUTHULD=y
+        help
+        Allows to redirect authuld files into specified location.
+
+config TIMEOUT_ACK_AUTHULD
+        int "Timout of authuld ack(minute)"
+        default 3
+        depends on EXECUTE_AUTHULD=y
+        help
+        if kernel do not get ACK from authuld, System will be down.
+
+endmenu # end of "CI+ Option" menu
+
+#endmenu

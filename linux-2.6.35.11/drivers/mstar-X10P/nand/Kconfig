@@ -1,0 +1,25 @@
+config MSTAR_NAND
+  select MTD
+  select MTD_CHAR
+  select MTD_BLKDEVS
+  
+  select MTD_NAND_PLATFORM
+  select MTD_CMDLINE_PARTS
+  select MTD_UBI
+  
+  select MTD_DEBUG
+  select MTD_CONCAT
+  select MTD_PARTITIONS
+  select MTD_NAND
+  
+  tristate "NAND"
+  default n
+
+help
+Enable compilation option for hy27us MTD driver
+
+config MSTAR_NAND_IP
+	string
+	default "fcie3" if MSTAR_TITANIA8 || MSTAR_TITANIA9 || MSTAR_AMBER1
+
+	default "error"

@@ -1,0 +1,29 @@
+menu "Samsung SP DEBUG patch"
+comment "VDLinux Debug patch"
+
+config VD_RELEASE
+	default n
+	bool "Turn on Release mode"
+	help
+	 Set Debug/Release mode (n : Debug / y : Release)
+
+config RUN_TIMER_DEBUG
+   bool "run timer debugging"
+   depends on VD_RELEASE=n
+
+config UNHANDLED_IRQ_TRACE_DEBUGGING
+   bool "trace unhandled irq tracing"
+   depends on VD_RELEASE=n
+   default n
+
+config FIND_LONG_TIME_IRQ_HANDLER
+   bool "trace irq handler which takes long time(> 1s)"
+   depends on UNHANDLED_IRQ_TRACE_DEBUGGING=y
+   default n
+
+config CHECK_MOUNT_DEBUG
+   bool "mount debugging"
+   depends on VD_RELEASE=n
+   default n  
+
+endmenu
