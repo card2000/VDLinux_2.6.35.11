@@ -2091,29 +2091,31 @@ static void MDev_EMAC_timer_callback(unsigned long value)
         spin_lock_irqsave(LocPtr->lock, flags);
         phy_status_register = bmsr;
         spin_unlock_irqrestore(LocPtr->lock, flags);
+        Link_timer.expires = jiffies + EMAC_CHECK_LINK_TIME;	
     }
     else if (-1 == ret)    //no link
     {
+        if(ThisBCE.connected) {
+            ThisBCE.connected = 0;
+        }
         // if disconnected is over 2 Sec, the real value of PHY's status register will report to application.
-        if(time_count > 2) {
+        if(time_count > 30) {
             // Link status is latched, so read twice to get current value //
             MHal_EMAC_read_phy (phyaddr, MII_BMSR, &bmsr);
             MHal_EMAC_read_phy (phyaddr, MII_BMSR, &bmsr);
             spin_lock_irqsave(LocPtr->lock, flags);
             phy_status_register = bmsr;
             spin_unlock_irqrestore(LocPtr->lock, flags);
-        }
-        else if(time_count <= 2){
-            time_count++;
-        }
-
-        if(ThisBCE.connected) {
-            ThisBCE.connected = 0;
             netif_carrier_off(emac_dev);
+            Link_timer.expires = jiffies + EMAC_CHECK_LINK_TIME;
+        }
+        else if(time_count <= 30){
+            time_count++;
+            // Time out is set 100ms. Quickly checks next phy status.
+            Link_timer.expires = jiffies + (EMAC_CHECK_LINK_TIME / 10);
         }
     }
 
-    Link_timer.expires = jiffies + EMAC_CHECK_LINK_TIME;
     add_timer(&Link_timer);
 }
 

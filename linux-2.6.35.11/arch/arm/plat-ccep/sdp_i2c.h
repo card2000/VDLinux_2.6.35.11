@@ -20,7 +20,6 @@
 
 #ifndef __SDP_I2C_H
 #define __SDP_I2C_H
-extern unsigned long sdp1106_get_clock (char mode);
 #if defined(CONFIG_ARCH_SDP1103)
 #define BUS_SRC_CLK	333333	
 #define I2C_SRC_CLK	(BUS_SRC_CLK >> 1)	// Bus clock divide by 2
@@ -52,6 +51,7 @@ extern unsigned long sdp1106_get_clock (char mode);
 
 #elif defined(CONFIG_ARCH_SDP1106)//11/07/19
 //#define BUS_SRC_CLK	4000000
+extern unsigned long sdp1106_get_clock (char mode);
 #define BUS_SRC_CLK (sdp1106_get_clock (REQ_PCLK)/ 1000)
 #define I2C_SRC_CLK	(BUS_SRC_CLK) // unit is Khz, 1500000 Khz 
 #ifdef CONFIG_ARM_GIC
@@ -62,6 +62,36 @@ extern unsigned long sdp1106_get_clock (char mode);
 #endif
 #define N_I2C_IRQ 	6
 #define N_I2C_PORT	8
+#define O_I2C_PEND	0xF4
+#define O_I2C_INTEN    0xF8
+#define I2C_SDA_SKEW	1  
+#define I2C_DP_PORT	4
+#elif defined(CONFIG_ARCH_SDP1202MPW)
+extern unsigned long sdp1202mpw_get_clock (char mode);
+#define BUS_SRC_CLK	(sdp1202mpw_get_clock (REQ_PCLK)/1000)
+#define I2C_SRC_CLK	(BUS_SRC_CLK) 
+#ifdef CONFIG_ARM_GIC
+#define I2C_IRQ	 IRQ_SPI(39)
+#else
+#define I2C_IRQ_SHARED
+#define I2C_IRQ	IRQ_I2C
+#endif
+#define N_I2C_PORT	6
+#define O_I2C_PEND	0xF4
+#define O_I2C_INTEN    0xF8
+#define I2C_SDA_SKEW	1  
+
+#elif defined(CONFIG_ARCH_SDP1114)
+extern unsigned long sdp1114_get_clock (char mode);
+#define BUS_SRC_CLK (sdp1114_get_clock (REQ_PCLK)/ 1000)
+#define I2C_SRC_CLK	(BUS_SRC_CLK) // unit is Khz, 1500000 Khz 
+#ifdef CONFIG_ARM_GIC
+#define I2C_IRQ	 IRQ_SPI(39)
+#else
+#define I2C_IRQ_SHARED
+#define I2C_IRQ	IRQ_I2C
+#endif
+#define N_I2C_PORT	6
 #define O_I2C_PEND	0xF4
 #define O_I2C_INTEN    0xF8
 #define I2C_SDA_SKEW	1  

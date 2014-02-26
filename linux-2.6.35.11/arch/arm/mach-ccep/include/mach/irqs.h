@@ -33,6 +33,14 @@
 #include "irqs-sdp1105fpga.h"
 #elif defined(CONFIG_ARCH_SDP1106FPGA)
 #include "irqs-sdp1106fpga.h"
+#elif defined(CONFIG_ARCH_SDP1202)
+#include "irqs-sdp1202.h"
+#elif defined(CONFIG_ARCH_SDP1202FPGA)
+#include "irqs-sdp1202fpga.h"
+#elif defined(CONFIG_ARCH_SDP1114)
+#include "irqs-sdp1114.h"
+#elif defined(CONFIG_ARCH_SDP1202MPW)
+#include "irqs-sdp1202mpw.h"
 #else
 #error 
 #endif

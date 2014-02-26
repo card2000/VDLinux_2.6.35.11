@@ -469,6 +469,8 @@ static int i2c_set_clock(struct i2c_ctrl_t* pPort, u16 speedKhz)
 	}
 #elif defined(CONFIG_ARCH_SDP1105)	// 1.236
 	regVal |= 0x100;				// 1.211 ECHO-B all port scl mon is disabled
+#elif defined(CONFIG_ARCH_SDP1114)
+	regVal |= 0x100;		
 #endif
 	R_I2C_CONE = regVal;
 // Oct,08,2009 end
@@ -497,7 +499,7 @@ static int i2c_check_bus(struct i2c_ctrl_t *pPort)
 		printk("[%s] %d run recovery routine \n", __FUNCTION__, pPort->port);
 
 		spin_lock(&pPort->lock);		// interrupt disable
-#if defined(CONFIG_ARCH_SDP1103)|| defined(CONFIG_ARCH_SDP1106)	// i2c port interrupt disable
+#if defined(CONFIG_ARCH_SDP1103)|| defined(CONFIG_ARCH_SDP1106)||defined(CONFIG_ARCH_SDP1114)	|| defined(CONFIG_ARCH_SDP1202MPW)	// i2c port interrupt disable
 		R_I2C_INTEN |= (1 << pPort->port);		
 #else
 		R_I2C_INTEN &= ~(1 << pPort->port);
@@ -572,7 +574,7 @@ __ready_out:
  	pPort->packet.status = STATUS_READY;	
 
 	spin_lock(&pPort->lock);		// interrupt disable
-#if defined(CONFIG_ARCH_SDP1103)|| defined(CONFIG_ARCH_SDP1106)	 // interrupt enable
+#if defined(CONFIG_ARCH_SDP1103)|| defined(CONFIG_ARCH_SDP1106)|| defined(CONFIG_ARCH_SDP1114)	||defined(CONFIG_ARCH_SDP1202MPW)	 // interrupt enable
 	R_I2C_INTEN &= ~(1 << pPort->port);
 #else
 	R_I2C_INTEN |= (1 << pPort->port);		
@@ -1440,7 +1442,7 @@ static int sdp_i2c_open(struct inode *inode, struct file *file)
 		return -ENODEV;
 	}
 #endif
-#if defined(CONFIG_ARCH_SDP1103)|| defined(CONFIG_ARCH_SDP1106)
+#if defined(CONFIG_ARCH_SDP1103)|| defined(CONFIG_ARCH_SDP1106) || defined(CONFIG_ARCH_SDP1114) ||defined(CONFIG_ARCH_SDP1202MPW)	
 	R_I2C_INTEN &= ~(1 << pPort->port);
 #else
 	R_I2C_INTEN |= (1 << pPort->port);

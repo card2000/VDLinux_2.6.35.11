@@ -65,6 +65,12 @@ config MACH_FPGA_SANTOS
 	help
 	  This enables support for Samsung VD DTV FPGA board, SANTOS
 
+config MACH_ECHOE
+	bool "Echoe platform, 2012"
+	select ARCH_SDP1114
+	select MACH_MEMORY_TYPE_SUPPORT
+	help
+	  This enables support for Samsung VD DTV Evaluation board, ECHOE
 endchoice #"DTV Platform (machine)"
 
 endif #SAMSUNG_VD_DTV_PLATFORM
@@ -116,6 +122,13 @@ config ARCH_SDP1106FPGA
 	select ARM_GIC if SMP
 	select PL330
 
+config ARCH_SDP1114
+	bool
+	select CPU_V7
+	select VFP
+	select NEON
+	select ARM_GIC if SMP
+	select PL330
 if MACH_GRIFFIN
 source "arch/arm/mach-ccep/griffin/Kconfig"
 endif # MACH_GRIFFIN

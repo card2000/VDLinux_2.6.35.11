@@ -1129,6 +1129,9 @@ static int do_umount(struct vfsmount *mnt, int flags)
  * unixes. Our API is identical to OSF/1 to avoid making a mess of AMD
  */
 
+#if CONFIG_FCOUNT_DEBUG
+extern void check_files_count(struct super_block *sb, struct vfsmount *mnt);
+#endif
 SYSCALL_DEFINE2(umount, char __user *, name, int, flags)
 {
 	struct path path;
@@ -1159,6 +1162,10 @@ dput_and_out:
 	/* we mustn't call path_put() as that would clear mnt_expiry_mark */
 	dput(path.dentry);
 	mntput_no_expire(path.mnt);
+#if CONFIG_FCOUNT_DEBUG
+	if( retval != 0 )
+		check_files_count(path.mnt->mnt_sb, path.mnt);
+#endif
 out:
 	return retval;
 }

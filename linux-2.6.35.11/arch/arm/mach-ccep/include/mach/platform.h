@@ -33,6 +33,14 @@
 #	include <mach/victoria.h>
 #elif defined(CONFIG_MACH_FPGA_VICTORIA)
 #	include <mach/fpga_victoria.h>
+#elif defined(CONFIG_MACH_FOXMP)
+#	include <mach/foxmp.h>
+#elif defined(CONFIG_MACH_FPGA_FOXMP)
+#	include <mach/fpga_foxmp.h>
+#elif defined(CONFIG_MACH_ECHOE)
+#	include <mach/echoe.h>
+#elif defined(CONFIG_MACH_MPW_FOXMP)
+#	include <mach/mpw_foxmp.h>
 #else
 #   error "Please Choose platform\n"
 #endif

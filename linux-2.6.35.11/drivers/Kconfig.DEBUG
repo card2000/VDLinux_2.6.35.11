@@ -25,5 +25,10 @@ config CHECK_MOUNT_DEBUG
    bool "mount debugging"
    depends on VD_RELEASE=n
    default n  
+   
+config FCOUNT_DEBUG
+   bool "print f_count when umount fail(task info also is printed when CONFIG_FD_PID is enable) "
+   depends on VD_RELEASE=n
+   default n  
 
 endmenu

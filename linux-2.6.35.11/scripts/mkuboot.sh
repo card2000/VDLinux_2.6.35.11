@@ -6,7 +6,7 @@
 
 MKIMAGE=$(type -path "${CROSS_COMPILE}mkimage")
 #MKIMAGE=arch/arm/boot/mkimage 
-MKIMAGE=../../bin/mkimage
+MKIMAGE=../bin/mkimage
 
 if [ -z "${MKIMAGE}" ]; then
 	MKIMAGE=$(type -path mkimage)

@@ -1838,7 +1838,6 @@ sd_read_cache_type(struct scsi_disk *sdkp, unsigned char *buffer)
 	int old_wce = sdkp->WCE;
 	int old_rcd = sdkp->RCD;
 	int old_dpofua = sdkp->DPOFUA;
-	unsigned char cdb[ATA_16_LEN] = {0};
 
 	first_len = 4;
 	if (sdp->skip_ms_page_8) {
@@ -1929,8 +1928,9 @@ sd_read_cache_type(struct scsi_disk *sdkp, unsigned char *buffer)
 		}
 
 		if (modepage == 0x3F) {
-			sd_printk(KERN_ERR, sdkp, "No Caching mode page present\n");
-			goto WCE_USING_ATA;
+                       sd_printk(KERN_ERR, sdkp, "No Caching mode page "
+                                 "present\n");
+                       goto defaults;
 		} else if ((buffer[offset] & 0x3f) != modepage) {
 			sd_printk(KERN_ERR, sdkp, "Got wrong page\n");
 			goto defaults;
@@ -1950,37 +1950,16 @@ Page_found:
 			sd_printk(KERN_NOTICE, sdkp,
 				  "Uses READ/WRITE(6), disabling FUA\n");
 			sdkp->DPOFUA = 0;
-		}
 
-WCE_USING_ATA:
-		if(NULL == strstr(sdp->vendor,"A-DATA")) {
-		if (!sdp->removable && !sdkp->WCE) {
-			sd_printk(KERN_NOTICE, sdkp,
-				"Try to check write cache enable/disable using ATA command \n");
-			cdb[0] = ATA_16;
 			/* Packet command, Programmed I/O - PIO - Indicates Data in */
-			cdb[1] = ATA_PROTO_PIO_IN;
 			/* Data read sectors from device */
-			cdb[2] = CDB2_TLEN_NSECT | CDB2_TLEN_SECTORS | CDB2_TDIR_FROM_DEV;
-			cdb[6] = 0x01; /* No. of Sectors To Read */
-			cdb[13] = ATA_USING_LBA;
-			cdb[14] = ATA_OP_IDENTIFY;
 					
-			sdkp->WCE = 0;
-			sdkp->RCD = 0;
-        		sdkp->DPOFUA = 0;
 
-			if (!scsi_execute_req(sdp, cdb, DMA_FROM_DEVICE, buffer,
-				SD_BUF_SIZE, &sshdr, SD_TIMEOUT, SD_MAX_RETRIES, NULL)) {
 				/*
 				 * '6th' Bit in Word 85 Corresponds to Write Cache
 				 * being Enabled/disabled, Word 85 represnets the
 				 * features supported
 				 */
-				if (le16_to_cpu(((unsigned short *)buffer)[85]) & 0x20)
-					sdkp->WCE = 1;
-			} 
-		}
 		}
 
 		if (sdkp->first_scan || old_wce != sdkp->WCE ||

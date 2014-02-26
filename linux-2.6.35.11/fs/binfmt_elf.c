@@ -211,9 +211,9 @@ void b64_encode( cc_u8 *input, cc_u8 *output, int insize )
 static void encrypt_write(struct file *file,const char *tmp,int len_available,int len_write,struct coredump_params *cprm)
 {
 	int overrun = 0;
-	char temp;
 	int i = 0;
 	int a = 0;
+	int index = 0,count=0;
 	
         while(len_available)
         {
@@ -240,21 +240,35 @@ static void encrypt_write(struct file *file,const char *tmp,int len_available,in
                         SDRM_OS2BN(cprm->buf_encode_out, ENCODE_OUT_SIZE, cprm->base);
                         SDRM_BN_ModExp(cprm->out, cprm->base, cprm->exp, cprm->mod);
 
-                        for(a = ENCODE_OUT_SIZE - 1; a >= 0; a--)
-                        {
-                                temp=SDRM_CheckByteUINT32(cprm->out->pData,a);
-                                dump_write(file, &temp, 1);
+                        for(a = ENCODE_OUT_SIZE - 1,index=0; a >= 0 ; a--,index++){
+                                cprm->dec_buf[index+(ENCODE_OUT_SIZE * count)]=SDRM_CheckByteUINT32(cprm->out->pData,a);
                         }
                         cprm->bufs_index = 0;
 			memset(cprm->buf_encode_in,0,sizeof(cprm->buf_encode_in));
 			memset(cprm->buf_encode_out,0,sizeof(cprm->buf_encode_out));
+			count++;
+			if(count== NR_BUFFERS){
+				if(!dump_write(file, cprm->dec_buf,(ENCODE_OUT_SIZE * count) )){
+	                	printk(KERN_ALERT "#####Error in writing ,coredump dump_write()fail...\n");
+				return;
                 }
-
+				count=0;
+				memset(cprm->dec_buf,0,(ENCODE_OUT_SIZE * count));
+			}
+                }
                 if (overrun)
                 {
                         break;
                 }
         }
+	if(count){
+		if(!dump_write(file,cprm->dec_buf,(ENCODE_OUT_SIZE * count) )){
+                	printk(KERN_ALERT "#####Error in writing ,coredump dump_write()fail...\n");
+                	return ;
+                }
+		memset(cprm->dec_buf,0,(ENCODE_OUT_SIZE * count));
+		count=0;
+	}
 }
 #endif
 
@@ -2178,6 +2192,11 @@ static int create_workspace(struct coredump_params *cprm)
 	SDRM_BN_OPTIMIZE_LENGTH(cprm->mod);
 	SDRM_OS2BN(cprm->GE, 3, cprm->exp);
 	SDRM_BN_OPTIMIZE_LENGTH(cprm->exp);
+	cprm->dec_buf = kmalloc((ENCODE_OUT_SIZE * NR_BUFFERS), GFP_KERNEL);
+        if (!cprm->dec_buf){
+                printk("Failed to alloc memory....\n");
+		return -ENOMEM;
+	}
 	return 0;
 }
 
@@ -2187,6 +2206,7 @@ static int free_workspace(struct coredump_params *cprm)
      SDRM_BN_FREE(cprm->pbbuf_exp);
      SDRM_BN_FREE(cprm->pbbuf_base);
      SDRM_BN_FREE(cprm->pbbuf_out);
+     kfree(cprm->dec_buf);
      return 0;
 }
 static int compress_coredump(struct file *file, unsigned char *uncomp_src, unsigned char *comp_buf,

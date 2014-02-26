@@ -42,6 +42,14 @@
 #   include <mach/memory-victoria.h>
 #elif defined(CONFIG_MACH_SANTOS) || defined(CONFIG_MACH_FPGA_SANTOS)
 #   include <mach/memory-santos.h>
+#elif defined(CONFIG_MACH_FOXMP)
+#	include <mach/memory-foxmp.h>
+#elif defined(CONFIG_MACH_FPGA_FOXMP)
+#	include <mach/memory-fpga_foxmp.h>
+#elif defined(CONFIG_MACH_ECHOE)
+#	include <mach/memory-echoe.h>
+#elif defined(CONFIG_MACH_MPW_FOXMP)
+#	include <mach/memory-mpw_foxmp.h>
 #else
 #   error
 #endif 

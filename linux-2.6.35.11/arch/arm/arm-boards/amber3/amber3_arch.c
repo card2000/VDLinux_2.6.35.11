@@ -470,8 +470,18 @@ void Chip_Inv_Cache_Range_VA_PA(unsigned long u32VAddr,unsigned long u32PAddr,un
 
 void Chip_Flush_Cache_All()
 {
+	unsigned long flags;
+
+	local_irq_save(flags);
+
 	//Clean & Inv All L1
 	__cpuc_flush_kern_all();
+
+	local_irq_restore(flags);
+
+	smp_call_function(__cpuc_flush_kern_all, NULL, 1);
+
+	local_irq_save(flags);
 
 #ifdef CONFIG_OUTER_CACHE
 	if (outer_cache.is_enable()) //check if L2 is enabled
@@ -485,7 +495,9 @@ void Chip_Flush_Cache_All()
 
 #ifndef CONFIG_OUTER_CACHE
 	_chip_flush_miu_pipe();
-#endif
+#endif 
+	
+	local_irq_restore(flags);
 }
 
 //need to be modified

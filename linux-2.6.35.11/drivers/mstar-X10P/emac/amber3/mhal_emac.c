@@ -1115,7 +1115,7 @@ void MHal_EMAC_Power_On_Clk( void )
     *( ( u32 * ) ( ( char * ) 0xFD245200 +  0x27*4) ) = ( (*( ( u32 * ) ( ( char * ) 0xFD245200 +  0x27*4) ) & 0x00FF) | 0x0200 ); //det max
     *( ( u32 * ) ( ( char * ) 0xFD245200 +  0x28*4) ) = ( (*( ( u32 * ) ( ( char * ) 0xFD245200 +  0x28*4) ) & 0x00FF) | 0x0100 ); //det min
     /* resolve PHY will disconnect suddently with specific HUB*/
-    *( ( u32 * ) ( ( char * ) 0xFD245200 +  0x42*2) ) = ( (*( ( u32 * ) ( ( char * ) 0xFD245200 +  0x42*2) ) & 0X00FF) | 0x1d20 ); // 2^-12 only k2
+    *( ( u32 * ) ( ( char * ) 0xFD245200 +  0x76*2) ) = 0x1800;	
     // Set MII Mode
     *( ( u32 * ) ( ( char * ) 0xFD201600 +  0x60*4) ) = 0x0000;
     *( ( u32 * ) ( ( char * ) 0xFD201600 +  0x61*4) ) = 0x0000;

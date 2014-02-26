@@ -415,6 +415,34 @@ retry:
 	file_list_unlock();
 }
 
+#if CONFIG_FCOUNT_DEBUG
+void check_files_count(struct super_block *sb, struct vfsmount *mnt)
+{
+	struct file *f;
+#ifdef CONFIG_FD_PID
+	struct task_struct *p;
+#endif
+	file_list_lock();
+	printk( KERN_ALERT "====================================================================\n");
+	printk( KERN_ALERT "Mount Point : %s\n", mnt->mnt_mountpoint->d_name.name);
+	printk( KERN_ALERT "File Name(File Count) - Task(optional - CONFIG_FD_PID)\n");
+	printk( KERN_ALERT "--------------------------------------------------------------------\n");
+	list_for_each_entry(f, &sb->s_files, f_u.fu_list) {
+#ifdef CONFIG_FD_PID
+		p = find_task_by_vpid(f->pid);
+		if( p )
+			printk( KERN_ALERT "* %s(%ld) - %s\n", (f->f_path).dentry->d_name.name, atomic_long_read(&(f)->f_count), p->comm);
+		else
+			printk( KERN_ALERT "* %s(%ld) - Task struct is not available\n", (f->f_path).dentry->d_name.name, atomic_long_read(&(f)->f_count));
+#else
+		printk( KERN_ALERT "* %s(%ld)\n", (f->f_path).dentry->d_name.name, atomic_long_read(&(f)->f_count));
+#endif
+	}
+	printk( KERN_ALERT "====================================================================\n");
+	file_list_unlock();
+}
+EXPORT_SYMBOL(check_files_count);
+#endif
 void __init files_init(unsigned long mempages)
 { 
 	int n; 

@@ -54,6 +54,16 @@ struct _sdp_gpio_pull
 #define REG_GPIO_CFG 0x100
 #define REG_GPIO_READ 0x108
 #define REG_GPIO_WRITE 0x104
+#elif defined(CONFIG_ARCH_SDP1114)	//Echo-E
+#define REG_GPIO_SIZE 0x200
+#define REG_GPIO_CFG 0x100
+#define REG_GPIO_READ 0x108
+#define REG_GPIO_WRITE 0x104
+#elif defined(CONFIG_ARCH_SDP1202MPW)	//MWP-FOXMP
+#define REG_GPIO_SIZE 0x200
+#define REG_GPIO_CFG 0x100
+#define REG_GPIO_READ 0x108
+#define REG_GPIO_WRITE 0x104
 #else
 #error  "Platform is not defined!!!"
 #endif

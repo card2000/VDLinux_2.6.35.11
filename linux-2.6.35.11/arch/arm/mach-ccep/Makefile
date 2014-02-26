@@ -31,6 +31,8 @@ obj-$(CONFIG_MACH_FPGA_VICTORIA)	+= fpga_victoria/
 obj-$(CONFIG_ARCH_SDP1103FPGA)	+= sdp1103fpga.o sdp1103fpga_clock.o
 obj-$(CONFIG_MACH_FPGA_SANTOS)	+= fpga_santos/
 
+obj-$(CONFIG_ARCH_SDP1114)	+= sdp1114.o sdp1114_clock.o sdp1114_gpio.o sdp1114_misc.o
+obj-$(CONFIG_MACH_ECHOE)	+= echoe/
 # Multi Core Support
 obj-$(CONFIG_SMP)		+= platsmp.o headsmp.o hotplug.o
 obj-$(CONFIG_LOCAL_TIMERS)		+= localtimer.o

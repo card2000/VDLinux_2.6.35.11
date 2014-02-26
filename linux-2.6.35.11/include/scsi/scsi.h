@@ -148,37 +148,15 @@ struct scsi_cmnd;
 #define	ATA_16		      0x85	/* 16-byte pass-thru */
 #define	ATA_12		      0xa1	/* 12-byte pass-thru */
 
-#define ATA_16_LEN	16
-#define ATA_OP_IDENTIFY	0xec /* Command to Identify device*/
 
-#define ATA_LBA48            1
-#define ATA_PROTO_NON_DATA   ( 3 << 1)
-#define ATA_PROTO_PIO_IN     ( 4 << 1)
-#define ATA_PROTO_PIO_OUT    ( 5 << 1)
-#define ATA_PROTO_DMA        ( 6 << 1)
 
 /*
  * Some useful ATA register bits
  */
-enum {
-	ATA_USING_LBA	=	(1 << 6),
-	ATA_STAT_DRQ	=	(1 << 3),
-	ATA_STAT_ERR	=	(1 << 0),
-};
 
-enum {
-	CDB2_TLEN_NODATA     = 0 << 0,
-	CDB2_TLEN_FEAT       = 1 << 0,
-	CDB2_TLEN_NSECT      = 2 << 0,
 
-	CDB2_TLEN_BYTES      = 0 << 2,
-	CDB2_TLEN_SECTORS    = 1 << 2,
 
-	CDB2_TDIR_TO_DEV     = 0 << 3,
-	CDB2_TDIR_FROM_DEV   = 1 << 3,
 
-	CDB2_CHECK_COND      = 1 << 5,
-};
 
 /*
  *	SCSI command lengths

@@ -86,6 +86,33 @@
 #  endif
 #  define SDP_GMAC_BUS		128
 
+#elif defined(CONFIG_ARCH_SDP1114)
+#  define PA_SDP_GMAC_BASE 	(0x30050000UL)
+#  define PA_SDP_GMAC_MMC_BASE            (PA_SDP_GMAC_BASE + SDP_GMAC_MMC_BASE)
+#  define PA_SDP_GMAC_TIME_STAMP_BASE     (PA_SDP_GMAC_BASE + SDP_GMAC_TIME_STAMP_BASE)
+#  define PA_SDP_GMAC_MAC_2ND_BLOCK_BASE  (PA_SDP_GMAC_BASE + SDP_GMAC_MAC_2ND_BLOCK_BASE)
+#  define PA_SDP_GMAC_DMA_BASE            (PA_SDP_GMAC_BASE + SDP_GMAC_DMA_BASE)
+#  define IRQ_SDP_GMAC		(IRQ_GMAC)
+#  if defined(CONFIG_VDLP_VERSION_INFO)
+#    define GMAC_PHY_ID		(3) 	/* H/W Fixed */
+#  else
+#    define GMAC_PHY_ID		(0) 	/* H/W Fixed */
+#  endif
+#  define SDP_GMAC_BUS		128
+
+#elif defined(CONFIG_ARCH_SDP1202MPW)
+#  define PA_SDP_GMAC_BASE 	(0x30050000UL)
+#  define PA_SDP_GMAC_MMC_BASE            (PA_SDP_GMAC_BASE + SDP_GMAC_MMC_BASE)
+#  define PA_SDP_GMAC_TIME_STAMP_BASE     (PA_SDP_GMAC_BASE + SDP_GMAC_TIME_STAMP_BASE)
+#  define PA_SDP_GMAC_MAC_2ND_BLOCK_BASE  (PA_SDP_GMAC_BASE + SDP_GMAC_MAC_2ND_BLOCK_BASE)
+#  define PA_SDP_GMAC_DMA_BASE            (PA_SDP_GMAC_BASE + SDP_GMAC_DMA_BASE)
+#  define IRQ_SDP_GMAC		(15)
+#  if defined(CONFIG_VDLP_VERSION_INFO)
+#    define GMAC_PHY_ID		(3) 	/* H/W Fixed */
+#  else
+#    define GMAC_PHY_ID		(0) 	/* H/W Fixed */
+#  endif
+#  define SDP_GMAC_BUS		128
 #else
 #  error
 #endif

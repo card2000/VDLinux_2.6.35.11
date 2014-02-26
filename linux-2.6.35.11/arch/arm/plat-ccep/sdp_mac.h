@@ -110,6 +110,12 @@
 #elif defined(CONFIG_ARCH_SDP1106)
 # define SDP_GMAC_PAD_INIT \
  	do { *(volatile u32 *)(VA_IO_BASE0+0x00090CDC) = 1; }while(0)
+#elif defined(CONFIG_ARCH_SDP1114)
+# define SDP_GMAC_PAD_INIT \
+ 	do { *(volatile u32 *)(VA_IO_BASE0+0x00090CDC) = 1; }while(0)
+#elif defined(CONFIG_ARCH_SDP1202MPW)
+# define SDP_GMAC_PAD_INIT \
+ 	do { *(volatile u32 *)(VA_IO_BASE0+0x00090CDC) = 1; }while(0)
 #else
 # define SDP_GMAC_PAD_INIT 
 #endif

@@ -52,6 +52,7 @@
 
 #define I2C_CONFIG_ENABLED		// To enable I2C
 
+#define SSC_ENABLED		// ssc on
 #ifdef I2C_CONFIG_ENABLED
 #include <plat/sdp_i2c_io.h>
 
@@ -2477,11 +2478,15 @@ static void ahci_sata_phy0_init(void)
 {
 	unsigned int 				regval;
 	int 						i;
+#ifdef SSC_ENABLED
+	unsigned char				ubSubAddr_ssc[3] = {0x0e,0x0f,0x0c}; //set 3967ppm
+	unsigned char				ubBuffer_ssc[3] = {0x15,0x42,0xd3};
+#endif
 #ifdef I2C_CONFIG_ENABLED
 	int						countI2C;
 	struct sdp_i2c_packet_t	getAHCIPacket; 
-	unsigned char				ubSubAddr[11] = {0x07, 0x08, 0x09, 0x0A, 0x0B, 0x12, 0x17, 0x18, 0x32, 0x3B, 0x3C};
-	unsigned char				ubBuffer[11] = {0x40, 0x70, 0xD8, 0x83, 0x7D, 0x77, 0x80, 0xC8, 0xEE, 0xC3, 0xC8};
+	unsigned char				ubSubAddr[12] = {0x02, 0x0b, 0x12, 0x17, 0x18, 0x2c, 0x32, 0x33, 0x34, 0x35, 0x3b,0x3c};
+	unsigned char				ubBuffer[12] = {0x24, 0x7d, 0x77, 0x80, 0xc8, 0x86, 0xee, 0x32, 0x87, 0x68, 0xc3,0xc8};
 #endif
 	ahci_set_reg(0x30090430, 0x00000011);		// me 110818 about Smart PVR
 
@@ -2502,6 +2507,8 @@ static void ahci_sata_phy0_init(void)
 
 	// guarantee the minimum assertion period.
 	for( i = 0; i < 100; i++ );
+	regval=ahci_get_reg(0x30010178)&~0x00000040; 
+	ahci_set_reg(0x30010178, regval);
 
 	// Re-configure OOBR
 	regval=ahci_get_reg(0x300100bc)|0x80000000;
@@ -2539,13 +2546,14 @@ static void ahci_sata_phy0_init(void)
 	regval=ahci_get_reg(0x30010178)&0xfffffff0; 
 	ahci_set_reg(0x30010178, regval);
 
-#ifdef I2C_CONFIG_ENABLED
-	// i2c driver functions (I2C CH5)
+	// guarantee the minimum assertion period.
+	for( i = 0; i < 100; i++ );
 	
 	// Assert cmn_rst (PHYCR[0])
-	regval=ahci_get_reg(0x30010178)|0x1; 
+	regval=ahci_get_reg(0x30010178)|0x00000001; 
 	ahci_set_reg(0x30010178, regval);	
 
+#ifdef I2C_CONFIG_ENABLED
 	getAHCIPacket.slaveAddr	= SATA_PHY_SLAVE_ADDRESS;
 	getAHCIPacket.subAddrSize	= 1;
 	getAHCIPacket.udelay		= 0;
@@ -2556,7 +2564,7 @@ static void ahci_sata_phy0_init(void)
 	getAHCIPacket.reserve[2]	= 0;
 	getAHCIPacket.reserve[3]	= 0;
 
-	for (countI2C = 0; countI2C < 11 ; countI2C++)
+	for (countI2C = 0; countI2C < 12 ; countI2C++)	
 	{
 		getAHCIPacket.pSubAddr 	= &ubSubAddr[countI2C];
 		getAHCIPacket.pDataBuffer	= &ubBuffer[countI2C];
@@ -2564,10 +2572,29 @@ static void ahci_sata_phy0_init(void)
 		sdp_i2c_request(SATA0_PHY_I2C_CHANNEL, I2C_CMD_WRITE, &getAHCIPacket);
 	}
 
+#endif
+#ifdef SSC_ENABLED
+	getAHCIPacket.slaveAddr	= SATA_PHY_SLAVE_ADDRESS;
+	getAHCIPacket.subAddrSize	= 1;
+	getAHCIPacket.udelay		= 0;
+	getAHCIPacket.speedKhz	= SATA_I2C_SPEED_400KHZ;			// 400 KHz clk
+	getAHCIPacket.dataSize		= 1;
+	getAHCIPacket.reserve[0]	= 0;
+	getAHCIPacket.reserve[1]	= 0;
+	getAHCIPacket.reserve[2]	= 0;
+	getAHCIPacket.reserve[3]	= 0;
+	for (countI2C = 0; countI2C < 3 ; countI2C++)
+	{
+		getAHCIPacket.pSubAddr 	= &ubSubAddr_ssc[countI2C];
+		getAHCIPacket.pDataBuffer	= &ubBuffer_ssc[countI2C];
+		sdp_i2c_request(SATA0_PHY_I2C_CHANNEL, I2C_CMD_WRITE, &getAHCIPacket);
+	}
+#endif
 	// Release cmn_rst (PHYCR[0])
 	regval=ahci_get_reg(0x30010178)&0xfffffffe; 
 	ahci_set_reg(0x30010178, regval);	
-#endif
+
+	for( i = 0; i < 100; i++ );
 
 	// Waiting for the PHY PLL to be locked (PHYSR[0])
 	regval=ahci_get_reg(0x3001017C)&0x00000001;
@@ -2603,11 +2630,15 @@ static void ahci_sata_phy1_init(void)
 {
 	unsigned int 				regval;
 	int 						i;
+#ifdef SSC_ENABLED
+	unsigned char				ubSubAddr_ssc[3] = {0x0e,0x0f,0x0c}; //set 3967ppm
+	unsigned char				ubBuffer_ssc[3] = {0x15,0x42,0xd3};
+#endif
 #ifdef I2C_CONFIG_ENABLED
 	int 						countI2C;
 	struct sdp_i2c_packet_t	getAHCIPacket; 
-	unsigned char				ubSubAddr[11] = {0x07, 0x08, 0x09, 0x0A, 0x0B, 0x12, 0x17, 0x18, 0x32, 0x3B, 0x3C};
-	unsigned char				ubBuffer[11] = {0x40, 0x70, 0xD8, 0x83, 0x7D, 0x77, 0x80, 0xC8, 0xEE, 0xC3, 0xC8};
+	unsigned char				ubSubAddr[12] = {0x02, 0x0b, 0x12, 0x17, 0x18, 0x2c, 0x32, 0x33, 0x34, 0x35, 0x3b,0x3c};
+	unsigned char				ubBuffer[12] = {0x24, 0x7d, 0x77, 0x80, 0xc8, 0x86, 0xee, 0x32, 0x87, 0x68, 0xc3,0xc8};
 #endif
 	ahci_set_reg(0x30090430, 0x00000011);		// me 110818 about Smart PVR
 
@@ -2629,6 +2660,8 @@ static void ahci_sata_phy1_init(void)
     // guarantee the minimum assertion period.
 	for( i = 0; i < 100; i++ );
 
+	regval=ahci_get_reg(0x30018178)&~0x00000040; 
+	ahci_set_reg(0x30018178, regval);
     // Re-configure OOBR
 	regval=ahci_get_reg(0x300180bc)|0x80000000;
 	ahci_set_reg(0x300180bc, regval);
@@ -2642,7 +2675,8 @@ static void ahci_sata_phy1_init(void)
 #endif
 
     // Enable SSC 
-	regval=ahci_get_reg(0x30018178)|0x00000100; 
+	regval=ahci_get_reg(0x30018178);
+	regval |= 0x00000100; // Enable SSC 
 	ahci_set_reg(0x30018178, regval);
     //
     // Insert other PHY strap signal setup here, if required
@@ -2667,13 +2701,14 @@ static void ahci_sata_phy1_init(void)
 	regval=ahci_get_reg(0x30018178)&0xfffffff0; 
 	ahci_set_reg(0x30018178, regval);
 
-#ifdef I2C_CONFIG_ENABLED
-	// i2c driver functions (I2C CH6)
+    // guarantee the minimum assertion period.
+	for( i = 0; i < 100; i++ );
 	
 	// Assert cmn_rst (PHYCR[0])
 	regval=ahci_get_reg(0x30018178)|0x1; 
 	ahci_set_reg(0x30018178, regval);	
 
+#ifdef I2C_CONFIG_ENABLED
 	getAHCIPacket.slaveAddr	= SATA_PHY_SLAVE_ADDRESS;
 	getAHCIPacket.subAddrSize	= 1;
 	getAHCIPacket.udelay		= 0;
@@ -2684,7 +2719,7 @@ static void ahci_sata_phy1_init(void)
 	getAHCIPacket.reserve[2]	= 0;
 	getAHCIPacket.reserve[3]	= 0;
 
-	for (countI2C = 0; countI2C < 11 ; countI2C++)
+	for (countI2C = 0; countI2C < 12 ; countI2C++)	
 	{
 		getAHCIPacket.pSubAddr 	= &ubSubAddr[countI2C];
 		getAHCIPacket.pDataBuffer	= &ubBuffer[countI2C];
@@ -2692,10 +2727,29 @@ static void ahci_sata_phy1_init(void)
 		sdp_i2c_request(SATA1_PHY_I2C_CHANNEL, I2C_CMD_WRITE, &getAHCIPacket);
 	}
 
+#endif
+#ifdef SSC_ENABLED
+	getAHCIPacket.slaveAddr	= SATA_PHY_SLAVE_ADDRESS;
+	getAHCIPacket.subAddrSize	= 1;
+	getAHCIPacket.udelay		= 0;
+	getAHCIPacket.speedKhz	= SATA_I2C_SPEED_400KHZ;			// 400 KHz clk
+	getAHCIPacket.dataSize		= 1;
+	getAHCIPacket.reserve[0]	= 0;
+	getAHCIPacket.reserve[1]	= 0;
+	getAHCIPacket.reserve[2]	= 0;
+	getAHCIPacket.reserve[3]	= 0;	
+	for (countI2C = 0; countI2C < 3 ; countI2C++)
+	{
+		getAHCIPacket.pSubAddr 	= &ubSubAddr_ssc[countI2C];
+		getAHCIPacket.pDataBuffer	= &ubBuffer_ssc[countI2C];
+		sdp_i2c_request(SATA1_PHY_I2C_CHANNEL, I2C_CMD_WRITE, &getAHCIPacket);
+	}
+#endif
 	// Release cmn_rst (PHYCR[0])
 	regval=ahci_get_reg(0x30018178)&0xfffffffe; 
 	ahci_set_reg(0x30018178, regval);	
-#endif
+
+	for( i = 0; i < 100; i++ );
 
 	// Waiting for the PHY PLL to be locked (PHYSR[0])
 	regval=ahci_get_reg(0x3001817C)&0x00000001;

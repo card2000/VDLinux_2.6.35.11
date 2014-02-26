@@ -88,6 +88,7 @@ struct coredump_params {
 	unsigned long mm_flags;
 #ifdef __KERNEL__
 #ifdef CONFIG_ENCRYPT_COREDUMP
+#define NR_BUFFERS 128
 #define ENCODE_IN_SIZE 96
 #define ENCODE_OUT_SIZE 128
 #define RSA_KEYBYTE_SIZE 128
@@ -105,6 +106,7 @@ struct coredump_params {
     	cc_u8 *pbbuf_base;
     	cc_u8 *pbbuf_out;
     	cc_u32 RSA_KeyByteLen;
+	char *dec_buf;
 #endif
 #endif
 };
